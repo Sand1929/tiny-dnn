@@ -36,6 +36,41 @@ class mse {
   }
 };
 
+// huber loss function for regression
+class huber {
+ public:
+  static float_t f(const vec_t &y, const vec_t &t) { 
+    assert(y.size() == t.size());
+    float_t d{0.0};
+
+    for (size_t i = 0; i < y.size(); ++i)
+      d += std::abs(y[i] - t[i]) <= 1 ? 0.5 * (y[i] - t[i]) * (y[i] - t[i])
+                                      : std::abs(y[i] - t[i]) - 0.5;
+
+    return d;
+  }
+
+  static vec_t df(const vec_t &y, const vec_t &t) {
+    assert(y.size() == t.size());
+    vec_t d(t.size());
+
+    for (size_t i = 0; i < y.size(); ++i) {
+      if (std::abs(y[i] - t[i]) <= 1) {
+        d[i] = (y[i] - t[i]);
+      } else {
+        float_t sign = y[i] - t[i];
+        if (sign < float_t{0.f}) {
+          d[i] = -1;
+        } else {
+          d[i] = 1;
+        }
+      }
+    }
+
+    return d;
+  }
+};
+
 // absolute loss function for regression
 class absolute {
  public:
